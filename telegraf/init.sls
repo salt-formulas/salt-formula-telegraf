@@ -1,0 +1,2 @@
+include:
+  - telegraf.agent

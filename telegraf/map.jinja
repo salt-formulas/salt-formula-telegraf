@@ -1,0 +1,25 @@
+{% set agent = salt['grains.filter_by']({
+    'default': {
+        'input': {
+           'cpu': {
+             'percpu': 'true',
+             'totalcpu': 'true'
+           },
+           'disk': {
+             'ignore_fs': ['tmpfs', 'devtmpfs']
+           },
+           'mem': {},
+           'system': {},
+        },
+    },
+}, merge=salt['grains.filter_by']({
+    'Debian': {
+      'pkgs': ['telegraf'],
+      'file': {
+        'config': '/etc/telegraf/telegraf.conf'
+      },
+      'dir': {
+        'config': '/etc/telegraf/telegraf.d'
+      },
+    },
+}, merge=salt['pillar.get']('telegraf:agent'))) %}
