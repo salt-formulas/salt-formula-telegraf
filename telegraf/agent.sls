@@ -54,25 +54,23 @@ output_{{ name }}:
         name: {{ name }}
         values: {{ values }}
 
-{%- if name == 'prometheus_client' %}
-
-{%- if values.bind.address == '0.0.0.0' %}
-{%- set address = grains['fqdn_ip4'][0] %}
-{%- else %}
-{%- set address = values.bind.address %}
-{%- endif %}
-
-prometheus_client_grain:
-  grains.present:
-    - name: prometheus_client
-    - force: True
-    - value:
-        address: {{ address }}
-        port: {{ values.bind.port }}
-
-{%- endif %}
-
 {%- endfor %}
+
+telegraf_grains_dir:
+  file.directory:
+  - name: /etc/salt/grains.d
+  - mode: 700
+  - makedirs: true
+  - user: root
+
+telegraf_grain:
+  file.managed:
+  - name: /etc/salt/grains.d/telegraf
+  - source: salt://telegraf/files/telegraf.grain
+  - template: jinja
+  - mode: 600
+  - require:
+    - file: telegraf_grains_dir
 
 telegraf_service:
   service.running:
