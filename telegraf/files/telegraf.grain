@@ -6,9 +6,7 @@
     {%- else %}
       {%- set address = agent.output.prometheus_client.bind.address %}
     {%- endif %}
-    {%- set service_grains = {'telegraf': {'prometheus_client': {'address': address, 'port': agent.output.prometheus_client.bind.port}}} %}
-  {%- else %}
-    {%- set service_grains = {'telegraf': {}} -%}
+    {%- do service_grains['telegraf'].update({'prometheus_client': {'address': address, 'port': agent.output.prometheus_client.bind.port}}) %}
   {%- endif %}
 {%- endif %}
 

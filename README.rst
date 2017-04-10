@@ -24,10 +24,7 @@ Sample pillars
             address: 0.0.0.0
             port: 9126
           engine: prometheus
-      input:
-        diskio:
-        processes:
-        net:
+
 
 Documentation and Bugs
 ======================

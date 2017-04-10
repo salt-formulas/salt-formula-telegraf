@@ -16,7 +16,38 @@ telegraf_config:
     - require:
       - pkg: telegraf_packages
 
-{%- for name,values in agent.input.iteritems() %}
+{%- set service_grains = {'telegraf': {'agent': {'input': {}}}} %}
+{%- for service_name, service in pillar.items() %}
+  {%- if service.get('_support', {}).get('telegraf', {}).get('enabled', False) %}
+    {%- set grains_fragment_file = service_name+'/meta/telegraf.yml' %}
+    {%- macro load_grains_file() %}{% include grains_fragment_file ignore missing %}{% endmacro %}
+    {%- set grains_yaml = load_grains_file()|load_yaml %}
+    {%- if grains_yaml is mapping %}
+      {%- set service_grains = salt['grains.filter_by']({'default': service_grains}, merge={'telegraf': grains_yaml}) %}
+    {%- endif %}
+  {%- endif %}
+{%- endfor %}
+
+telegraf_grains_dir:
+  file.directory:
+  - name: /etc/salt/grains.d
+  - mode: 700
+  - makedirs: true
+  - user: root
+
+telegraf_grain:
+  file.managed:
+  - name: /etc/salt/grains.d/telegraf
+  - source: salt://telegraf/files/telegraf.grain
+  - template: jinja
+  - mode: 600
+  - defaults:
+    service_grains: {{ service_grains|yaml }}
+  - require:
+    - file: telegraf_grains_dir
+
+{%- set telegraf_input = service_grains.telegraf.agent.input %}
+{%- for name,values in telegraf_input.iteritems() %}
 
 input_{{ name }}:
   file.managed:
@@ -55,22 +86,6 @@ output_{{ name }}:
         values: {{ values }}
 
 {%- endfor %}
-
-telegraf_grains_dir:
-  file.directory:
-  - name: /etc/salt/grains.d
-  - mode: 700
-  - makedirs: true
-  - user: root
-
-telegraf_grain:
-  file.managed:
-  - name: /etc/salt/grains.d/telegraf
-  - source: salt://telegraf/files/telegraf.grain
-  - template: jinja
-  - mode: 600
-  - require:
-    - file: telegraf_grains_dir
 
 telegraf_service:
   service.running:
