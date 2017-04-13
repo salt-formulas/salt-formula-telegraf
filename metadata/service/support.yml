@@ -1,0 +1,5 @@
+parameters:
+  telegraf:
+    _support:
+      prometheus:
+        enabled: true

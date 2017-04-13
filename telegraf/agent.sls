@@ -65,6 +65,16 @@ input_{{ name }}:
         name: {{ name }}
         values: {{ values }}
 
+{%- if name == 'docker' %}
+telegraf_user:
+  user.present:
+    - name: telegraf
+    - groups:
+      - docker
+    - require:
+      - pkg: telegraf_packages
+{%- endif %}
+
 {%- endfor %}
 
 {%- for name,values in agent.output.iteritems() %}

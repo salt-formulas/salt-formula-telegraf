@@ -1,5 +1,7 @@
 applications:
   - telegraf
+classes:
+ - service.telegraf.support
 parameters:
   telegraf:
     agent:

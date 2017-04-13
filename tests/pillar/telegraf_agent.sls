@@ -6,10 +6,6 @@ telegraf:
     metric_batch_size: 1000
     metric_buffer_limit: 10000
     collection_jitter: 2
-    input:
-      disk:
-      processes:
-      mem:
     output:
       prometheus_client:
         bind:

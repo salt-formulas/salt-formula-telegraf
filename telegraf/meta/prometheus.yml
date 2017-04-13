@@ -1,0 +1,20 @@
+{%- from "telegraf/map.jinja" import agent with context -%}
+{%- if agent.output is defined %}
+  {%- if agent.output.prometheus_client is defined %}
+    {%- if agent.output.prometheus_client.bind.address == '0.0.0.0' %}
+      {%- set address = grains['fqdn_ip4'][0] %}
+    {%- else %}
+      {%- set address = agent.output.prometheus_client.bind.address %}
+    {%- endif %}
+  {%- endif %}
+{%- endif %}
+
+{%- if address is defined %}
+server:
+  target:
+    static:
+      telegraf:
+        endpoint:
+          - address: {{ address }}
+            port: {{ agent.output.prometheus_client.bind.port }}
+{%- endif %}
