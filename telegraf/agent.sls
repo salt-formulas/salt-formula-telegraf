@@ -28,6 +28,8 @@ telegraf_config:
   {%- endif %}
 {%- endfor %}
 
+{%- set service_grains = salt['grains.filter_by']({'default': service_grains}, merge={'telegraf': {'agent': {'input': agent.get('input', {})}}}) %}
+
 telegraf_grains_dir:
   file.directory:
   - name: /etc/salt/grains.d
@@ -47,8 +49,10 @@ telegraf_grain:
     - file: telegraf_grains_dir
 
 {%- set telegraf_input = service_grains.telegraf.agent.input %}
+
 {%- for name,values in telegraf_input.iteritems() %}
 
+{%- if values is not mapping or values.get('enabled', True) %}
 input_{{ name }}:
   file.managed:
     - name: {{ agent.dir.config }}/input-{{ name }}.conf
@@ -73,6 +77,16 @@ telegraf_user:
       - docker
     - require:
       - pkg: telegraf_packages
+{%- endif %}
+
+{%- else %}
+input_{{name }}:
+  file.absent:
+    - name: {{ agent.dir.config }}/input-{{ name }}.conf
+    - require:
+      - pkg: telegraf_packages
+    - watch_in:
+      - service: telegraf_service
 {%- endif %}
 
 {%- endfor %}
