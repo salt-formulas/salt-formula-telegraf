@@ -1,0 +1,6 @@
+grain:
+  {%- if pillar.telegraf.agent is defined %}
+  {%- from "telegraf/map.jinja" import service_grains with context %}
+  telegraf:
+    {{ service_grains|yaml(False)|indent(4) }}
+  {%- endif %}
