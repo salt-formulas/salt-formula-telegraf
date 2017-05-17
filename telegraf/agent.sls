@@ -31,8 +31,10 @@ input_{{ name }}:
     - template: jinja
     - require:
       - pkg: telegraf_packages
+    {%- if not grains.get('noservices', False)%}
     - watch_in:
       - service: telegraf_service
+    {%- endif %}
     - defaults:
         name: {{ name }}
         values: {{ values }}
@@ -41,7 +43,7 @@ input_{{ name }}:
 telegraf_user:
   user.present:
     - name: telegraf
-    - groups:
+    - optional_groups:
       - docker
     - require:
       - pkg: telegraf_packages
@@ -53,8 +55,10 @@ input_{{name }}:
     - name: {{ agent.dir.config }}/input-{{ name }}.conf
     - require:
       - pkg: telegraf_packages
+    {%- if not grains.get('noservices', False)%}
     - watch_in:
       - service: telegraf_service
+    {%- endif %}
 {%- endif %}
 
 {%- endfor %}
@@ -71,13 +75,17 @@ output_{{ name }}:
     - template: jinja
     - require:
       - pkg: telegraf_packages
+    {%- if not grains.get('noservices', False)%}
     - watch_in:
       - service: telegraf_service
+    {%- endif %}
     - defaults:
         name: {{ name }}
         values: {{ values }}
 
 {%- endfor %}
+
+{%- if not grains.get('noservices', False)%}
 
 telegraf_service:
   service.running:
@@ -85,5 +93,7 @@ telegraf_service:
     - enable: True
     - watch:
       - file: telegraf_config
+
+{%- endif %}
 
 {%- endif %}
