@@ -24,7 +24,9 @@ telegraf_config:
 input_{{ name }}:
   file.managed:
     - name: {{ agent.dir.config }}/input-{{ name }}.conf
-    - source: salt://telegraf/files/input/{{ name }}.conf
+    - source:
+      - salt://telegraf/files/input/{{ name }}.conf
+      - salt://telegraf/files/input/generic.conf
     - user: root
     - group: root
     - mode: 644
