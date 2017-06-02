@@ -1,29 +1,28 @@
-{% from "telegraf/map.jinja" import agent, service_grains with context %}
-{%- if agent.enabled %}
+{% from "telegraf/map.jinja" import telegraf_grains with context %}
+{%- set agent = telegraf_grains.telegraf.get('agent', {}) %}
+{%- if agent.get('enabled', False) %}
 
-telegraf_packages:
+telegraf_packages_agent:
   pkg.installed:
     - names: {{ agent.pkgs }}
 
-telegraf_config:
+telegraf_config_agent:
   file.managed:
-    - name: {{ agent.file.config }}
+    - name: {{ agent.dir.config }}/telegraf.conf
     - source: salt://telegraf/files/telegraf.conf
     - user: root
     - group: root
     - mode: 644
     - template: jinja
     - require:
-      - pkg: telegraf_packages
+      - pkg: telegraf_packages_agent
 
-{%- set telegraf_input = service_grains.telegraf.agent.input %}
-
-{%- for name,values in telegraf_input.iteritems() %}
+{%- for name,values in agent.input.iteritems() %}
 
 {%- if values is not mapping or values.get('enabled', True) %}
-input_{{ name }}:
+input_{{ name }}_agent:
   file.managed:
-    - name: {{ agent.dir.config }}/input-{{ name }}.conf
+    - name: {{ agent.dir.config_d }}/input-{{ name }}.conf
     - source:
       - salt://telegraf/files/input/{{ name }}.conf
       - salt://telegraf/files/input/generic.conf
@@ -32,10 +31,10 @@ input_{{ name }}:
     - mode: 644
     - template: jinja
     - require:
-      - pkg: telegraf_packages
+      - pkg: telegraf_packages_agent
     {%- if not grains.get('noservices', False)%}
     - watch_in:
-      - service: telegraf_service
+      - service: telegraf_service_agent
     {%- endif %}
     - defaults:
         name: {{ name }}
@@ -48,18 +47,18 @@ telegraf_user_in_group_{{ name }}:
     - optional_groups:
       - {{ name }}
     - require:
-      - pkg: telegraf_packages
+      - pkg: telegraf_packages_agent
 {%- endif %}
 
 {%- else %}
-input_{{name }}:
+input_{{name }}_agent:
   file.absent:
-    - name: {{ agent.dir.config }}/input-{{ name }}.conf
+    - name: {{ agent.dir.config_d }}/input-{{ name }}.conf
     - require:
-      - pkg: telegraf_packages
+      - pkg: telegraf_packages_agent
     {%- if not grains.get('noservices', False)%}
     - watch_in:
-      - service: telegraf_service
+      - service: telegraf_service_agent
     {%- endif %}
 {%- endif %}
 
@@ -67,19 +66,19 @@ input_{{name }}:
 
 {%- for name,values in agent.output.iteritems() %}
 
-output_{{ name }}:
+output_{{ name }}_agent:
   file.managed:
-    - name: {{ agent.dir.config }}/output-{{ name }}.conf
+    - name: {{ agent.dir.config_d }}/output-{{ name }}.conf
     - source: salt://telegraf/files/output/{{ name }}.conf
     - user: root
     - group: root
     - mode: 644
     - template: jinja
     - require:
-      - pkg: telegraf_packages
+      - pkg: telegraf_packages_agent
     {%- if not grains.get('noservices', False)%}
     - watch_in:
-      - service: telegraf_service
+      - service: telegraf_service_agent
     {%- endif %}
     - defaults:
         name: {{ name }}
@@ -89,12 +88,12 @@ output_{{ name }}:
 
 {%- if not grains.get('noservices', False)%}
 
-telegraf_service:
+telegraf_service_agent:
   service.running:
     - name: telegraf
     - enable: True
     - watch:
-      - file: telegraf_config
+      - file: telegraf_config_agent
 
 {%- endif %}
 

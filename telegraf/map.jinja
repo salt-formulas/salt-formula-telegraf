@@ -1,16 +1,23 @@
 {% set agent = salt['grains.filter_by']({
     'Debian': {
       'pkgs': ['telegraf'],
-      'file': {
-        'config': '/etc/telegraf/telegraf.conf'
-      },
       'dir': {
-        'config': '/etc/telegraf/telegraf.d'
+        'config': '/etc/telegraf',
+        'config_d': '/etc/telegraf/telegraf.d'
       },
     },
 }, merge=salt['pillar.get']('telegraf:agent')) %}
 
-{%- set service_grains = {'telegraf': {'agent': {'input': {}}}} %}
+{% set remote_agent = salt['grains.filter_by']({
+    'Debian': {
+      'dir': {
+        'config': '/srv/volumes/local/telegraf',
+        'config_d': '/srv/volumes/local/telegraf/telegraf.d'
+      },
+    },
+}, merge=salt['pillar.get']('telegraf:remote_agent')) %}
+
+{%- set service_grains = {'telegraf': {'agent': {'input': {}}, 'remote_agent': {'input':{}}}} %}
 {%- for service_name, service in pillar.items() %}
   {%- if service.get('_support', {}).get('telegraf', {}).get('enabled', False) %}
     {%- set grains_fragment_file = service_name+'/meta/telegraf.yml' %}
@@ -21,4 +28,5 @@
     {%- endif %}
   {%- endif %}
 {%- endfor %}
-{%- set service_grains = salt['grains.filter_by']({'default': service_grains}, merge={'telegraf': {'agent': {'input': agent.get('input', {})}}}) %}
+{%- set telegraf_grains = salt['grains.filter_by']({'default': service_grains}, merge={'telegraf': {'agent': agent}}) %}
+{%- set telegraf_grains = salt['grains.filter_by']({'default': service_grains}, merge={'telegraf': {'remote_agent': remote_agent}}) %}
