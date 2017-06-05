@@ -41,12 +41,12 @@ input_{{ name }}:
         name: {{ name }}
         values: {{ values }}
 
-{%- if name == 'docker' %}
-telegraf_user:
+{%- if name in ('docker', 'haproxy') %}
+telegraf_user_in_group_{{ name }}:
   user.present:
     - name: telegraf
     - optional_groups:
-      - docker
+      - {{ name }}
     - require:
       - pkg: telegraf_packages
 {%- endif %}
