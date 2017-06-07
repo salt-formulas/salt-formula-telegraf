@@ -27,6 +27,8 @@ telegraf_config_remote_agent:
     - template: jinja
     - require:
       - file: config_dir_remote_agent
+    - context:
+      agent: {{ remote_agent }}
 
 {%- for name,values in remote_agent.get('input', {}).iteritems() %}
 
