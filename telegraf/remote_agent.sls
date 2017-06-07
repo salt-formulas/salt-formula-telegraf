@@ -28,7 +28,15 @@ telegraf_config_remote_agent:
     - require:
       - file: config_dir_remote_agent
 
-{%- for name,values in remote_agent.get('input', {}).iteritems() %}
+{%- set remote_agent_inputs = {'input': {}} %}
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set remote_agent_input = node_grains.get('telegraf', {}).get('remote_agent', {}).get('input', {}) %}
+  {%- if remote_agent_input %}
+    {%- set remote_agent_inputs = salt['grains.filter_by']({'default': remote_agent_inputs}, merge={'input': remote_agent_input}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- for name,values in remote_agent_inputs.get('input', {}).iteritems() %}
 
 {%- if values is not mapping or values.get('enabled', True) %}
 input_{{ name }}_remote_agent:
