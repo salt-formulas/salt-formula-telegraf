@@ -1,0 +1,11 @@
+parameters:
+  telegraf:
+    agent:
+      input:
+        http_listener:
+          bind:
+            address: 127.0.0.1
+            port: 8186
+          read_timeout: 10s
+          write_timeout: 10s
+          tagexclude: ['hostname']
