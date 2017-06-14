@@ -27,6 +27,8 @@ telegraf_config_remote_agent:
     - template: jinja
     - require:
       - file: config_dir_remote_agent
+    - context:
+      agent: {{ remote_agent }}
 
 {%- set remote_agent_inputs = {'input': {}} %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}

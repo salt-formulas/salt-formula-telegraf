@@ -16,6 +16,8 @@ telegraf_config_agent:
     - template: jinja
     - require:
       - pkg: telegraf_packages_agent
+    - context:
+      agent: {{ agent }}
 
 {%- for name,values in agent.input.iteritems() %}
 
