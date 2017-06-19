@@ -19,6 +19,15 @@ telegraf_config_agent:
     - context:
       agent: {{ agent }}
 
+config_d_dir_agent:
+  file.directory:
+    - name: {{agent.dir.config_d}}
+    - makedirs: True
+    - clean: True
+    - mode: 755
+    - require:
+      - pkg: telegraf_packages_agent
+
 {%- for name,values in agent.input.iteritems() %}
 
 {%- if values is not mapping or values.get('enabled', True) %}
@@ -34,6 +43,7 @@ input_{{ name }}_agent:
     - template: jinja
     - require:
       - pkg: telegraf_packages_agent
+      - file: config_d_dir_agent
     - watch_in:
       - service: telegraf_service_agent
     - defaults:
@@ -50,14 +60,6 @@ telegraf_user_in_group_{{ name }}:
       - pkg: telegraf_packages_agent
 {%- endif %}
 
-{%- else %}
-input_{{name }}_agent:
-  file.absent:
-    - name: {{ agent.dir.config_d }}/input-{{ name }}.conf
-    - require:
-      - pkg: telegraf_packages_agent
-    - watch_in:
-      - service: telegraf_service_agent
 {%- endif %}
 
 {%- endfor %}
@@ -74,6 +76,7 @@ output_{{ name }}_agent:
     - template: jinja
     - require:
       - pkg: telegraf_packages_agent
+      - file: config_d_dir_agent
     - watch_in:
       - service: telegraf_service_agent
     - defaults:
