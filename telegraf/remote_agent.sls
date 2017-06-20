@@ -30,7 +30,7 @@ telegraf_config_remote_agent:
     - context:
       agent: {{ remote_agent }}
 
-{%- set remote_agent_inputs = {'input': {}} %}
+{%- set remote_agent_inputs = {'input': remote_agent.input} %}
 {%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
   {%- set remote_agent_input = node_grains.get('telegraf', {}).get('remote_agent', {}).get('input', {}) %}
   {%- if remote_agent_input %}
