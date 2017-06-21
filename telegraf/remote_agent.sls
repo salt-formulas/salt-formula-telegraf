@@ -13,6 +13,7 @@ config_d_dir_remote_agent:
   file.directory:
     - name: {{remote_agent.dir.config_d}}
     - makedirs: True
+    - clean: True
     - mode: 755
     - require:
       - file: config_dir_remote_agent
@@ -57,12 +58,6 @@ input_{{ name }}_remote_agent:
         name: {{ name }}
         values: {{ values }}
 
-{%- else %}
-input_{{name }}_remote_agent:
-  file.absent:
-    - name: {{ remote_agent.dir.config_d }}/input-{{ name }}.conf
-    - require:
-      - file: config_d_dir_remote_agent
 {%- endif %}
 
 {%- endfor %}
