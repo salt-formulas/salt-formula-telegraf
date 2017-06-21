@@ -35,6 +35,9 @@ input_{{ name }}_agent:
   file.managed:
     - name: {{ agent.dir.config_d }}/input-{{ name }}.conf
     - source:
+{%- if values.template is defined %}
+      - salt://{{ values.template }}
+{%- endif %}
       - salt://telegraf/files/input/{{ name }}.conf
       - salt://telegraf/files/input/generic.conf
     - user: root
