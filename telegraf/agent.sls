@@ -53,7 +53,7 @@ input_{{ name }}_agent:
         name: {{ name }}
         values: {{ values }}
 
-{%- if name in ('docker', 'haproxy') %}
+{%- if name in ('ceph', 'docker', 'haproxy') %}
 telegraf_user_in_group_{{ name }}:
   user.present:
     - name: telegraf
