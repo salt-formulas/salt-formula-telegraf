@@ -23,10 +23,16 @@ config_d_dir_agent:
   file.directory:
     - name: {{agent.dir.config_d}}
     - makedirs: True
-    - clean: True
     - mode: 755
     - require:
       - pkg: telegraf_packages_agent
+
+config_d_dir_agent_clean:
+  file.directory:
+    - name: {{agent.dir.config_d}}
+    - clean: True
+    - watch_in:
+      - service: telegraf_service_agent
 
 {%- for name,values in agent.input.iteritems() %}
 
@@ -47,6 +53,8 @@ input_{{ name }}_agent:
     - require:
       - pkg: telegraf_packages_agent
       - file: config_d_dir_agent
+    - require_in:
+      - file: config_d_dir_agent_clean
     - watch_in:
       - service: telegraf_service_agent
     - defaults:
@@ -80,6 +88,8 @@ output_{{ name }}_agent:
     - require:
       - pkg: telegraf_packages_agent
       - file: config_d_dir_agent
+    - require_in:
+      - file: config_d_dir_agent_clean
     - watch_in:
       - service: telegraf_service_agent
     - defaults:

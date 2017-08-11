@@ -16,10 +16,18 @@ config_d_dir_remote_agent:
   file.directory:
     - name: {{remote_agent.dir.config_d}}
     - makedirs: True
-    - clean: True
     - mode: 755
     - require:
       - file: config_dir_remote_agent
+
+config_d_dir_remote_agent_clean:
+  file.directory:
+    - name: {{remote_agent.dir.config_d}}
+    - clean: True
+    - onchanges_in:
+{%- for docker_id in docker_ids.split() %}
+      - cmd: {{docker_id}}_remote_agent_reload
+{%- endfor %}
 
 telegraf_config_remote_agent:
   file.managed:
@@ -68,6 +76,8 @@ input_{{ name }}_remote_agent:
 {%- endfor %}
     - require:
       - file: config_d_dir_remote_agent
+    - require_in:
+      - file: config_d_dir_remote_agent_clean
     - defaults:
         name: {{ name }}
         values: {{ values }}
@@ -92,6 +102,8 @@ output_{{ name }}_remote_agent:
 {%- endfor %}
     - require:
       - file: config_d_dir_remote_agent
+    - require_in:
+      - file: config_d_dir_remote_agent_clean
     - defaults:
         name: {{ name }}
         values: {{ values }}
