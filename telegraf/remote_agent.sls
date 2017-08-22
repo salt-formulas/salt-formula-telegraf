@@ -4,7 +4,7 @@
 {%- if remote_agent.get('enabled', False) %}
 
 {%- set remote_agent_label = pillar.get('docker', {}).get('client', {}).get('stack', {}).get('monitoring', {}).get('service', {}).get('remote_agent', {}).get('deploy', {}).get('labels', {}).get('com.mirantis.monitoring', 'remote_agent') %}
-{%- set docker_ids = salt['cmd.run']("docker ps -q -f 'label=com.mirantis.monitoring=" + remote_agent_label + "' 2> /dev/null") %}
+{%- set docker_ids = salt['cmd.shell']("docker ps -q -f 'label=com.mirantis.monitoring=" + remote_agent_label + "' 2> /dev/null") %}
 
 config_dir_remote_agent:
   file.directory:
