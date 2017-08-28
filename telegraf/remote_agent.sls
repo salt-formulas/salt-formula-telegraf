@@ -80,7 +80,11 @@ input_{{ name }}_remote_agent:
       - file: config_d_dir_remote_agent_clean
     - defaults:
         name: {{ name }}
+{%- if values is mapping %}
         values: {{ values }}
+{%- else %}
+        values: {}
+{%- endif %}
 
 {%- endif %}
 
@@ -106,7 +110,11 @@ output_{{ name }}_remote_agent:
       - file: config_d_dir_remote_agent_clean
     - defaults:
         name: {{ name }}
+{%- if values is mapping %}
         values: {{ values }}
+{%- else %}
+        values: {}
+{%- endif %}
 
 {%- endfor %}
 

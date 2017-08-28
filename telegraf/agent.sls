@@ -59,7 +59,11 @@ input_{{ name }}_agent:
       - service: telegraf_service_agent
     - defaults:
         name: {{ name }}
+{%- if values is mapping %}
         values: {{ values }}
+{%- else %}
+        values: {}
+{%- endif %}
 
 {%- if name in ('ceph', 'docker', 'haproxy') %}
 telegraf_user_in_group_{{ name }}:
@@ -94,7 +98,11 @@ output_{{ name }}_agent:
       - service: telegraf_service_agent
     - defaults:
         name: {{ name }}
+{%- if values is mapping %}
         values: {{ values }}
+{%- else %}
+        values: {}
+{%- endif %}
 
 {%- endfor %}
 
