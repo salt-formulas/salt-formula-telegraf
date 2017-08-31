@@ -2,7 +2,13 @@
 {%- if agent.output is defined %}
   {%- if agent.output.prometheus_client is defined %}
     {%- if agent.output.prometheus_client.bind.address == '0.0.0.0' %}
-      {%- set address = grains['fqdn_ip4'][0] %}
+      {%- set fqdn_ip4_addresses = [] %}
+      {%- for addr in grains['fqdn_ip4'] %}
+        {%- if not addr.startswith('127.') %}
+          {%- do fqdn_ip4_addresses.append(addr) %}
+        {%- endif %}
+      {%- endfor %}
+      {%- set address = fqdn_ip4_addresses[0] %}
     {%- else %}
       {%- set address = agent.output.prometheus_client.bind.address %}
     {%- endif %}
