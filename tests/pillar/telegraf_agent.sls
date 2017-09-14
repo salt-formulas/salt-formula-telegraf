@@ -23,6 +23,12 @@ telegraf:
           address: 127.0.0.1
           port: 9126
         engine: prometheus
+      influxdb:
+        urls:
+          - http://127.0.0.1:8086
+        database: test-telegraf
+        write_consistency: any
+        timeout: 10s
     input:
       cpu:
         totalcpu: totalcpu_value

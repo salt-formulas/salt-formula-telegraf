@@ -25,6 +25,20 @@ Sample pillars
             port: 9126
           engine: prometheus
 
+Influx output
+-------------
+
+.. code-block:: yaml
+
+  telegraf:
+    agent:
+      output:
+        influxdb:
+          urls:
+            - http://127.0.0.1:8086
+          database: test-telegraf
+          write_consistency: any
+          timeout: 10s
 
 Documentation and Bugs
 ======================

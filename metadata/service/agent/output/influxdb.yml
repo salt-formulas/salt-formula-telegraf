@@ -1,0 +1,10 @@
+parameters:
+  telegraf:
+    agent:
+      output:
+        influxdb:
+          # urls: ['http://127.0.0.1:8086']
+          database: telegraf
+          timeout: 30s
+          retention_policy: default
+          write_consistency: any
