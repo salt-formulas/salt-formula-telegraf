@@ -10,6 +10,6 @@ Vcs-Git: https://github.com/salt-formulas/salt-formula-telegraf.git
 
 Package: salt-formula-telegraf
 Architecture: all
-Depends: ${misc:Depends}, salt-master, reclass
+Depends: ${misc:Depends}
 Description: telegraf Salt formula
  Install and configure telegraf monitoring
