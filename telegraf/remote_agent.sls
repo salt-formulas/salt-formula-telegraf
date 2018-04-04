@@ -95,7 +95,12 @@ input_{{ name }}_remote_agent:
 output_{{ name }}_remote_agent:
   file.managed:
     - name: {{ remote_agent.dir.config_d }}/output-{{ name }}.conf
-    - source: salt://telegraf/files/output/{{ name }}.conf
+    - source:
+{%- if values.template is defined %}
+      - salt://{{ values.template }}
+{%- endif %}
+      - salt://telegraf/files/output/{{ name }}.conf
+      - salt://telegraf/files/output/generic.conf
     - user: root
     - group: root
     - mode: 644
