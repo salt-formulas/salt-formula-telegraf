@@ -18,7 +18,7 @@
 }, merge=salt['pillar.get']('telegraf:remote_agent')) %}
 
 {# Collect configuration from */meta/telegraf.yml #}
-{%- set telegraf_grains = {'telegraf': {'agent': {'input': {}}, 'remote_agent': {'input':{}}}} %}
+{%- set telegraf_grains = {'telegraf': {'agent': {'input': {}}, 'remote_agent': {'input':{}, 'output':{}}}} %}
 {%- for service_name, service in pillar.items() %}
   {%- if service.get('_support', {}).get('telegraf', {}).get('enabled', False) %}
     {%- set grains_fragment_file = service_name+'/meta/telegraf.yml' %}

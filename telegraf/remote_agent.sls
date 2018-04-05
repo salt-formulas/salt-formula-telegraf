@@ -90,7 +90,15 @@ input_{{ name }}_remote_agent:
 
 {%- endfor %}
 
-{%- for name,values in remote_agent.get('output', {}).iteritems() %}
+{%- set remote_agent_outputs = {'output': remote_agent.output} %}
+{%- for node_name, node_grains in salt['mine.get']('*', 'grains.items').iteritems() %}
+  {%- set remote_agent_output = node_grains.get('telegraf', {}).get('remote_agent', {}).get('output', {}) %}
+  {%- if remote_agent_output %}
+    {%- set remote_agent_outputs = salt['grains.filter_by']({'default': remote_agent_outputs}, merge={'output': remote_agent_output}) %}
+  {%- endif %}
+{%- endfor %}
+
+{%- for name,values in remote_agent_outputs.get('output', {}).iteritems() %}
 
 output_{{ name }}_remote_agent:
   file.managed:
