@@ -28,4 +28,5 @@ server:
             replacement: {{ grains['host'] }}
             source_labels: "__address__"
             target_label: "host"
+        honor_labels: true
 {%- endif %}
