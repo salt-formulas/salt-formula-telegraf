@@ -20,9 +20,11 @@ install:
   - bundle install
 
 env:
-  - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-xenial-salt-2016.3 SUITE=telegraf-agent
-  - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-xenial-salt-2017.7 SUITE=telegraf-agent
-  # - PLATFORM=epcim/salt-formulas:saltstack-ubuntu-bionic-salt-2017.7 SUITE=telegraf-agent
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 SUITE=telegraf-agent
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 SUITE=telegraf-agent
+  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2018.3 SUITE=telegraf-agent
+  # - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2017.7 SUITE=telegraf-agent
+  # - PLATFORM=epcim/salt:saltstack-ubuntu-bionic-salt-2018.3 SUITE=telegraf-agent
 
 before_script:
   - set -o pipefail
