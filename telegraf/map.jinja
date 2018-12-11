@@ -20,7 +20,7 @@
 {# Collect configuration from */meta/telegraf.yml #}
 {%- set telegraf_grains = {'telegraf': {'agent': {'input': {}}, 'remote_agent': {'input':{}, 'output':{}}}} %}
 {%- for service_name, service in pillar.items() %}
-  {%- if service.get('_support', {}).get('telegraf', {}).get('enabled', False) %}
+  {%- if service is mapping and service.get('_support', {}).get('telegraf', {}).get('enabled', False) %}
     {%- set grains_fragment_file = service_name+'/meta/telegraf.yml' %}
     {%- macro load_grains_file() %}{% include grains_fragment_file ignore missing %}{% endmacro %}
     {%- set grains_yaml = load_grains_file()|load_yaml %}
